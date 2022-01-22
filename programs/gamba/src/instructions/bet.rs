@@ -7,7 +7,7 @@ use crate::{errors::ErrorCode};
 #[instruction(bet_bump: u8, gamba_bump: u8, epoch_bump: u8, epoch: u32)]
 pub struct MakeBet<'info> {
     #[account(init,
-        seeds = [user.key.as_ref(), b"bet".as_ref()], 
+        seeds = [user.key.as_ref(), b"bet".as_ref(), &epoch.to_le_bytes()], 
         bump = bet_bump,
         payer = user, space = 8 + 12)]
     pub bet_account: Account<'info, BetAccount>,

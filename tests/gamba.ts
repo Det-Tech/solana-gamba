@@ -30,18 +30,8 @@ describe('gamba', () => {
   it('user initializes', async () => {
     const userAccount = anchor.web3.Keypair.generate();
     const gamba = new GambaUtils(provider.connection, providerWallet, program, true);
-    const airdropTxnId = await provider.connection.requestAirdrop(userAccount.publicKey, LAMPORTS_PER_SOL/10);
-    console.log("airdrop tx:", airdropTxnId);
 
-    var bal = 0;
-
-    while (bal == 0) {
-      bal = await provider.connection.getBalance(userAccount.publicKey);
-      await new Promise(resolve => setTimeout(resolve,1000));
-      console.log("sleeping 1 second")
-    }
-    console.log("bal is: ", bal)
-
+    const _bal = await gamba.request_air_drop(userAccount.publicKey, LAMPORTS_PER_SOL/10);
     const [_user_account_pda, _user_account_bump] = await gamba.init_user(userAccount, "bobby tables");
 
     const state = await program.account.userAccount.fetch(_user_account_pda);
@@ -91,5 +81,17 @@ describe('gamba', () => {
     assert.equal(gamba_state_after.currentOpenEpoch, next_epoch);
 
   });
+
+  it('can make a bet', async () => {
+    const userAccount = anchor.web3.Keypair.generate();
+    const gamba = new GambaUtils(provider.connection, providerWallet, program, true);
+    // await  gamba.init_gamba();
+
+    const _bal = await gamba.request_air_drop(userAccount.publicKey, LAMPORTS_PER_SOL/10);
+    //const [_user_account_pda, _user_account_bump] = await gamba.init_user(userAccount, "bobby tables");
+    //const [epoch_pda, epoch_bump] = await gamba.init_epoch(1, providerWallet);
+    const bet_tx = await gamba.make_bet(userAccount, 42069, 1);
+  });
+
 
 });
